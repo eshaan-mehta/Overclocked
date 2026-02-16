@@ -792,7 +792,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cb73ab2aba0c47ae9b1a8b383040367, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDetector
-  interactionRadius: 1.2
+  interactionRadius: 1.45
   detectionAngle: 0.3
 --- !u!1 &1140390361
 GameObject:
