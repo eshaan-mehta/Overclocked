@@ -13,7 +13,7 @@ public class InteractableDetector : MonoBehaviour
 
     void Update()
     {
-        InteractableDetector closest = FindClosestFacingInteractable();
+        Interactable closest = FindClosestFacingInteractable();
 
         if (closest != currentHighlighted)
         {
@@ -29,6 +29,7 @@ public class InteractableDetector : MonoBehaviour
             {
                 currentHighlighted.SetHighlighted(true);
             }
+        }
     }
 
     private Interactable FindClosestFacingInteractable()
@@ -39,9 +40,9 @@ public class InteractableDetector : MonoBehaviour
         Interactable closestInteractable = null;
         float closestDistance = float.MaxValue;
 
-        foreach (Collider collider in colliders)
+        foreach (Collider col in colliders)
         {
-            Interactable interactable = collider.GetComponent<Interactable>();
+            Interactable interactable = col.GetComponent<Interactable>();
             if (interactable == null) continue;
             
             // Compute angle between player and collider
@@ -64,10 +65,10 @@ public class InteractableDetector : MonoBehaviour
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
+        Gizmos.DrawWireSphere(transform.position, interactionRadius);
 
         // Draw forward direction line
         Gizmos.color = Color.green;
-        Gizmos.DrawRay(transform.position, transform.forward * detectionRange);
+        Gizmos.DrawRay(transform.position, transform.forward * interactionRadius);
     }
 }
