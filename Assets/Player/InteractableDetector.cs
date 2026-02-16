@@ -42,7 +42,7 @@ public class InteractableDetector : MonoBehaviour
 
         foreach (Collider col in colliders)
         {
-            Interactable interactable = col.GetComponent<Interactable>();
+            Interactable interactable = col.GetComponentInParent<Interactable>();
             if (interactable == null) continue;
             
             // Compute angle between player and collider
