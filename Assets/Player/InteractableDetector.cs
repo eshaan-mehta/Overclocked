@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class InteractableDetector : MonoBehaviour
 {
     [Header("Interaction Settings")] 
@@ -8,8 +7,18 @@ public class InteractableDetector : MonoBehaviour
 
     [Tooltip("How wide the detection cone is (0 = directly ahead, 1 = full 180 degrees)")]
     [Range(0f, 1f)]
-    public float detectionAngle = 0.3f; 
+    public float detectionAngle = 0.3f;
     private Interactable currentHighlighted;
+    private DiskHoldingSystem holdingSystem;
+
+    void Start()
+    {
+        holdingSystem = GetComponent<DiskHoldingSystem>();
+        if (holdingSystem == null)
+        {
+            Debug.LogWarning("InteractableDetector: DiskHoldingSystem not found on player");
+        }
+    }
 
     void Update()
     {
@@ -44,7 +53,10 @@ public class InteractableDetector : MonoBehaviour
         {
             Interactable interactable = col.GetComponentInParent<Interactable>();
             if (interactable == null) continue;
-            
+
+            // Skip if the interactable cannot be interacted with
+            if (!interactable.CanInteract()) continue;
+
             // Compute angle between player and collider
             Vector3 directionToTarget = (col.transform.position - transform.position).normalized;
             float dot = Vector3.Dot(transform.forward, directionToTarget);
@@ -59,6 +71,11 @@ public class InteractableDetector : MonoBehaviour
             }
         }
         return closestInteractable;
+    }
+
+    public Interactable GetCurrentHighlighted()
+    {
+        return currentHighlighted;
     }
 
     // Draw the detection range in the Scene view for debugging

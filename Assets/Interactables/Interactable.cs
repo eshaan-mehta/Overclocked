@@ -11,15 +11,25 @@ public class Interactable : MonoBehaviour
 
     private Renderer objectRenderer;
 
-    void Start()
+    protected virtual void Start()
     {
         objectRenderer = GetComponent<Renderer>();
         objectRenderer.material.EnableKeyword("_EMISSION");
     }
 
-    public void SetHighlighted(bool highlighted) 
+    public virtual void SetHighlighted(bool highlighted)
     {
         Color emission = highlighted ? highlightColor * highlightIntersity : Color.black;
         objectRenderer.material.SetColor("_EmissionColor", emission);
+    }
+
+    public virtual bool CanInteract()
+    {
+        return true;
+    }
+
+    public virtual void OnInteract()
+    {
+        // Override in subclasses
     }
 }
