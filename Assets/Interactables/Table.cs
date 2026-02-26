@@ -6,9 +6,19 @@ public class Table : Interactable
     [SerializeField] private Disk currentDisk;
     [SerializeField] private Transform diskSlot;
 
+    [Header("Processing Settings")]
+    [SerializeField] private GameObject processingTimerPrefab;
+    [SerializeField] private Color processingHighlightColor = new Color(1f, 0.3f, 0f); // Red/Orange
+
+    [Header("UI References")]
+    [SerializeField] private TimerSelectionUI timerSelectionUI;
+
     private DiskHoldingSystem holdingSystem;
+    private TableProcessingTimer activeTimer;
+    private bool isProcessing = false;
 
     public bool HasDisk => currentDisk != null;
+    public bool IsProcessing => isProcessing;
 
     protected override void Start()
     {
@@ -25,11 +35,27 @@ public class Table : Interactable
         {
             Debug.LogWarning("Table: diskSlot not assigned");
         }
+
+        if (timerSelectionUI == null)
+        {
+            timerSelectionUI = FindFirstObjectByType<TimerSelectionUI>();
+        }
+    }
+
+    void Update()
+    {
+        if (isProcessing && activeTimer != null && activeTimer.IsComplete())
+        {
+            OnProcessingComplete();
+        }
     }
 
     public override bool CanInteract()
     {
         if (holdingSystem == null) return false;
+
+        // Cannot interact while processing
+        if (isProcessing) return false;
 
         // Can pick up if player is NOT holding and this table HAS a disk
         if (!holdingSystem.IsHoldingDisk() && HasDisk)
@@ -52,15 +78,67 @@ public class Table : Interactable
 
         if (HasDisk)
         {
-            // Pickup flow
+            // Pickup flow - UNCHANGED
             Disk diskToPickup = RemoveDisk();
             holdingSystem.PickUpDisk(diskToPickup);
         }
         else
         {
-            // Place flow
-            holdingSystem.PlaceDisk(this);
+            // Place flow - show timer selection popup
+            if (timerSelectionUI != null)
+            {
+                timerSelectionUI.ShowPopup(OnTimerSelected);
+            }
+            else
+            {
+                Debug.LogError("Table: TimerSelectionUI not found");
+                // Fallback: place immediately with 3s default
+                OnTimerSelected(3f);
+            }
         }
+    }
+
+    private void OnTimerSelected(float duration)
+    {
+        // Call DiskHoldingSystem to physically place the disk
+        holdingSystem.PlaceDisk(this, duration);
+
+        // Start processing state
+        StartProcessing(duration);
+    }
+
+    private void StartProcessing(float duration)
+    {
+        isProcessing = true;
+
+        // Spawn timer bar
+        if (processingTimerPrefab != null)
+        {
+            GameObject timerObj = Instantiate(processingTimerPrefab, transform);
+            activeTimer = timerObj.GetComponent<TableProcessingTimer>();
+
+            if (activeTimer != null)
+            {
+                activeTimer.Initialize(duration, transform);
+            }
+        }
+
+        // Update highlight to processing color
+        RefreshHighlight();
+    }
+
+    private void OnProcessingComplete()
+    {
+        isProcessing = false;
+
+        if (activeTimer != null)
+        {
+            Destroy(activeTimer.gameObject);
+            activeTimer = null;
+        }
+
+        // Restore normal highlight
+        RefreshHighlight();
     }
 
     public void PlaceDisk(Disk disk)
@@ -80,13 +158,32 @@ public class Table : Interactable
 
     public override void SetHighlighted(bool highlighted)
     {
-        // Highlight the table
-        base.SetHighlighted(highlighted);
+        if (isProcessing)
+        {
+            // Use red/orange processing color
+            Color emission = highlighted ? processingHighlightColor * highlightIntersity : Color.black;
+            objectRenderer.material.SetColor("_EmissionColor", emission);
+        }
+        else
+        {
+            // Normal white highlight
+            base.SetHighlighted(highlighted);
+        }
 
-        // Also highlight the disk if present
+        // Highlight disk (but not during processing)
         if (currentDisk != null)
         {
-            currentDisk.SetHighlighted(highlighted);
+            currentDisk.SetHighlighted(highlighted && !isProcessing);
+        }
+    }
+
+    private void RefreshHighlight()
+    {
+        // Refresh the current highlight state
+        InteractableDetector detector = FindFirstObjectByType<InteractableDetector>();
+        if (detector != null && detector.GetCurrentHighlighted() == this)
+        {
+            SetHighlighted(true);
         }
     }
 

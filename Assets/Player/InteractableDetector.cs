@@ -54,8 +54,8 @@ public class InteractableDetector : MonoBehaviour
             Interactable interactable = col.GetComponentInParent<Interactable>();
             if (interactable == null) continue;
 
-            // Skip if the interactable cannot be interacted with
-            if (!interactable.CanInteract()) continue;
+            // Skip if the interactable cannot be highlighted
+            if (!interactable.CanBeHighlighted()) continue;
 
             // Compute angle between player and collider
             Vector3 directionToTarget = (col.transform.position - transform.position).normalized;

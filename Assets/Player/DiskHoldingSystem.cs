@@ -54,6 +54,14 @@ public class DiskHoldingSystem : MonoBehaviour
         disk.SetHighlighted(false);
     }
 
+    // Overload for timer-based placement
+    public void PlaceDisk(Table targetTable, float processingDuration)
+    {
+        // Call existing PlaceDisk logic
+        PlaceDisk(targetTable);
+        // Processing is managed by Table.StartProcessing()
+    }
+
     public void PlaceDisk(Table targetTable)
     {
         if (heldDisk == null)
@@ -89,9 +97,6 @@ public class DiskHoldingSystem : MonoBehaviour
         // Update references
         targetTable.PlaceDisk(heldDisk);
         heldDisk.SetParentTable(targetTable);
-
-        // Refresh highlighting - ensure the newly placed disk is highlighted if table is highlighted
-        targetTable.SetHighlighted(true);
 
         // Clear held disk
         heldDisk = null;
