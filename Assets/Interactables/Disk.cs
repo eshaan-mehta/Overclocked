@@ -6,6 +6,7 @@ public class Disk : Interactable
     private Table parentTable;
     private Collider diskCollider;
     private Vector3 originalScale;
+    private Color currentHighlightColor = Color.white;
 
     protected override void Start()
     {
@@ -14,11 +15,29 @@ public class Disk : Interactable
         originalScale = transform.localScale;
     }
 
+    public override bool CanBeHighlighted()
+    {
+        // Disks are never directly highlighted by the detector
+        // The parent table handles highlighting the disk
+        return false;
+    }
+
     public override bool CanInteract()
     {
         // Disks are never directly interactable
         // Players interact with tablees to pick up/place disks
         return false;
+    }
+
+    public override void SetHighlighted(bool highlighted)
+    {
+        Color emission = highlighted ? currentHighlightColor * highlightIntersity : Color.black;
+        objectRenderer.material.SetColor("_EmissionColor", emission);
+    }
+
+    public void SetHighlightColor(Color color)
+    {
+        currentHighlightColor = color;
     }
 
     public void SetParentTable(Table table)

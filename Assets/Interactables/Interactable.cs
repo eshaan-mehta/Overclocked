@@ -9,7 +9,7 @@ public class Interactable : MonoBehaviour
     [Range(0f, 1f)]
     public float highlightIntersity = 0.3f;
 
-    private Renderer objectRenderer;
+    protected Renderer objectRenderer;
 
     protected virtual void Start()
     {
@@ -21,6 +21,11 @@ public class Interactable : MonoBehaviour
     {
         Color emission = highlighted ? highlightColor * highlightIntersity : Color.black;
         objectRenderer.material.SetColor("_EmissionColor", emission);
+    }
+
+    public virtual bool CanBeHighlighted()
+    {
+        return true;
     }
 
     public virtual bool CanInteract()

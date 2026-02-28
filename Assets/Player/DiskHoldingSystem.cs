@@ -54,25 +54,33 @@ public class DiskHoldingSystem : MonoBehaviour
         disk.SetHighlighted(false);
     }
 
-    public void PlaceDisk(Table targetTable)
+    // Overload for timer-based placement
+    public bool PlaceDisk(Table targetTable, float processingDuration)
+    {
+        // Call existing PlaceDisk logic
+        return PlaceDisk(targetTable);
+        // Processing is managed by Table.StartProcessing()
+    }
+
+    public bool PlaceDisk(Table targetTable)
     {
         if (heldDisk == null)
         {
             Debug.LogWarning("DiskHoldingSystem: No disk to place");
-            return;
+            return false;
         }
 
         if (targetTable == null)
         {
             Debug.LogWarning("DiskHoldingSystem: Target table is null");
-            return;
+            return false;
         }
 
         Transform diskSlot = targetTable.GetDiskSlot();
         if (diskSlot == null)
         {
             Debug.LogError("DiskHoldingSystem: Target table has no disk slot");
-            return;
+            return false;
         }
 
         // Position at disk slot
@@ -90,10 +98,8 @@ public class DiskHoldingSystem : MonoBehaviour
         targetTable.PlaceDisk(heldDisk);
         heldDisk.SetParentTable(targetTable);
 
-        // Refresh highlighting - ensure the newly placed disk is highlighted if table is highlighted
-        targetTable.SetHighlighted(true);
-
         // Clear held disk
         heldDisk = null;
+        return true;
     }
 }
