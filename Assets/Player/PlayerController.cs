@@ -17,6 +17,11 @@ public class PlayerController : MonoBehaviour
         rb.freezeRotation = true;
     }
 
+    void OnDisable()
+    {
+        StopMovement();
+    }
+
     void Update()
     {
         inputValue = Keyboard.current != null
@@ -41,5 +46,20 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity.y,
             moveDirection.z * moveSpeed
         );
+    }
+
+    public void StopMovement()
+    {
+        inputValue = Vector2.zero;
+        moveDirection = Vector3.zero;
+
+        if (rb == null)
+            rb = GetComponent<Rigidbody>();
+
+        if (rb != null)
+        {
+            rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
+            rb.angularVelocity = Vector3.zero;
+        }
     }
 }

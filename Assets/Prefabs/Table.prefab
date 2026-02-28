@@ -160,3 +160,6 @@ MonoBehaviour:
   highlightIntersity: 0.3
   currentDisk: {fileID: 0}
   diskSlot: {fileID: 1114359729211915560}
+  processingTimerPrefab: {fileID: 4251564737280518575, guid: f429dace11ec1429998fdd6027068b23, type: 3}
+  processingHighlightColor: {r: 1, g: 0.3, b: 0, a: 1}
+  timerSelectionUI: {fileID: 0}

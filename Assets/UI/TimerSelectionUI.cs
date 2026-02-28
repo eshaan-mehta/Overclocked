@@ -79,7 +79,10 @@ public class TimerSelectionUI : MonoBehaviour
         if (isFrozen) return;
 
         if (playerController != null)
+        {
+            playerController.StopMovement();
             playerController.enabled = false;
+        }
 
         if (playerInput != null)
             playerInput.DeactivateInput();

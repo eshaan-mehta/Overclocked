@@ -40,6 +40,9 @@ public class TableProcessingTimer : MonoBehaviour
     {
         if (!isRunning) return;
 
+        if (mainCamera == null)
+            mainCamera = Camera.main;
+
         // Billboard effect - always face the camera
         if (mainCamera != null)
         {
@@ -54,9 +57,6 @@ public class TableProcessingTimer : MonoBehaviour
         {
             remainingTime = 0f;
             isRunning = false;
-            // Self-destruct when complete
-            Destroy(gameObject);
-            return;
         }
 
         UpdateUI();
@@ -64,7 +64,7 @@ public class TableProcessingTimer : MonoBehaviour
 
     private void UpdateUI()
     {
-        float progress = remainingTime / duration;
+        float progress = duration > 0f ? remainingTime / duration : 0f;
 
         if (fillBar != null)
             fillBar.fillAmount = progress;
